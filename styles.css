@@ -1211,3 +1211,13 @@ select:focus {
  
  
  
+
+ / *   M O B I L E   S I D E B A R   Z - I N D E X   F I X E S   * / 
+ . m o b i l e - h e a d e r   {   z - i n d e x :   1 0 0   ! i m p o r t a n t ;   } 
+ . s i d e b a r - o v e r l a y   {   z - i n d e x :   9 9 0   ! i m p o r t a n t ;   } 
+ . s i d e b a r - o v e r l a y . a c t i v e   {   d i s p l a y :   b l o c k   ! i m p o r t a n t ;   o p a c i t y :   1   ! i m p o r t a n t ;   z - i n d e x :   9 9 0   ! i m p o r t a n t ;   } 
+ @ m e d i a   ( m a x - w i d t h :   9 0 0 p x )   { 
+         . s i d e b a r   {   z - i n d e x :   1 0 0 0   ! i m p o r t a n t ;   w i d t h :   2 8 0 p x   ! i m p o r t a n t ;   } 
+ } 
+  
+ 
