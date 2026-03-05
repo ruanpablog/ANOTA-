@@ -1222,3 +1222,118 @@ select:focus {
  
  
  
+
+/* =========================================
+   MOBILE RESPONSIVE - FINAL OVERRIDE
+========================================= */
+
+/* Mobile header hidden by default */
+.mobile-header {
+    display: none;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 20px;
+    background: rgba(2, 6, 23, 0.98);
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    width: 100%;
+}
+
+/* Sidebar overlay - hidden by default */
+.sidebar-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.65);
+    z-index: 999;
+}
+.sidebar-overlay.active {
+    display: block;
+}
+
+@media (max-width: 900px) {
+    /* Show mobile header */
+    .mobile-header {
+        display: flex !important;
+    }
+
+    /* Dashboard becomes column layout */
+    .dashboard-layout {
+        flex-direction: column !important;
+        height: auto !important;
+        min-height: 100vh;
+    }
+
+    /* Sidebar slides in from left, hidden by default */
+    .sidebar {
+        position: fixed !important;
+        top: 0 !important;
+        left: -100% !important;
+        width: 80vw !important;
+        max-width: 300px !important;
+        height: 100vh !important;
+        z-index: 1000 !important;
+        transition: left 0.3s ease !important;
+        overflow-y: auto;
+    }
+
+    /* When open class is added by JS */
+    .sidebar.open {
+        left: 0 !important;
+    }
+
+    /* Main area fills the screen */
+    .main-content-area {
+        width: 100% !important;
+        height: auto !important;
+        overflow-y: auto;
+        flex: 1;
+    }
+
+    /* Content paddings */
+    .dashboard-content {
+        margin: 16px auto !important;
+        padding: 0 16px !important;
+    }
+
+    /* Header stack */
+    .dashboard-header {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 12px !important;
+    }
+    .dashboard-header .btn-primary {
+        width: 100% !important;
+    }
+
+    /* Cards stack on mobile */
+    .summary-cards {
+        grid-template-columns: 1fr !important;
+    }
+
+    /* Charts stack */
+    .charts-section {
+        grid-template-columns: 1fr !important;
+    }
+
+    /* Transactions stack */
+    .transaction-item {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 12px !important;
+    }
+    .item-right-wrapper {
+        width: 100% !important;
+        justify-content: space-between !important;
+    }
+
+    /* Modals fit mobile */
+    .modal {
+        width: 95vw !important;
+        max-height: 90vh !important;
+        overflow-y: auto !important;
+        padding: 20px !important;
+    }
+}
