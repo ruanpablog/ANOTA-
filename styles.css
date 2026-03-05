@@ -1337,3 +1337,76 @@ select:focus {
         padding: 20px !important;
     }
 }
+
+/* =========================================
+   SIDEBAR TEXT FIX + BUTTON SIZES MOBILE
+========================================= */
+
+/* Sidebar nav items - texto vivo */
+.nav-item {
+    color: #cbd5e1 !important;
+}
+.nav-item:hover {
+    color: #ffffff !important;
+    background: rgba(255,255,255,0.08) !important;
+}
+.nav-item.active {
+    color: #ffffff !important;
+    background: var(--primary) !important;
+}
+.sidebar .brand-text-small {
+    color: #60a5fa !important;
+}
+
+/* Icones da sidebar vividos */
+.nav-item i {
+    color: inherit !important;
+    opacity: 1 !important;
+}
+
+@media (max-width: 900px) {
+    /* Botoes de acao adaptativos no mobile */
+    .btn-primary, .btn-outline {
+        padding: 12px 16px !important;
+        font-size: 0.9rem !important;
+        width: 100% !important;
+    }
+
+    /* Botao hamburguer maior para tocar facil */
+    #btn-mobile-menu {
+        font-size: 1.8rem !important;
+        padding: 8px !important;
+        color: #60a5fa !important;
+    }
+
+    /* Botoes de acao inline (Nova Transacao, etc) */
+    .dashboard-header .btn-primary,
+    .dashboard-header .btn-outline {
+        width: 100% !important;
+        padding: 14px 16px !important;
+        font-size: 1rem !important;
+    }
+
+    /* Multiplos botoes side by side viram coluna */
+    .dashboard-header div[style*='flex'] {
+        flex-direction: column !important;
+        width: 100% !important;
+    }
+
+    /* Cards menores */
+    .card h3 {
+        font-size: 1.5rem !important;
+    }
+
+    /* Nav items maiores para toque */
+    .sidebar .nav-item {
+        padding: 16px 20px !important;
+        font-size: 1rem !important;
+        color: #e2e8f0 !important;
+    }
+
+    /* Logout vermelho visivel */
+    .sidebar .logout-btn {
+        color: #f87171 !important;
+    }
+}
