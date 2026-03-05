@@ -8,11 +8,31 @@ document.addEventListener('DOMContentLoaded', () => {
     const registerForm = document.getElementById('register-form');
     const loginForm = document.getElementById('login-form');
 
-    // Transactions Modal
-    const transactionModal = document.getElementById('transaction-modal');
-    const transactionForm = document.getElementById('transaction-form');
-    const modalTitle = document.getElementById('modal-title');
-    const inputEditId = document.getElementById('edit-id');
+    // --- Mobile Sidebar Overlay ---
+    const sidebar = document.querySelector('.sidebar');
+    const btnMobileMenu = document.getElementById('btn-mobile-menu');
+    let sidebarOverlay = document.createElement('div');
+    sidebarOverlay.className = 'sidebar-overlay';
+    document.body.appendChild(sidebarOverlay);
+
+    const openSidebar = () => {
+        sidebar.classList.add('open');
+        sidebarOverlay.classList.add('active');
+    };
+
+    const closeSidebar = () => {
+        sidebar.classList.remove('open');
+        sidebarOverlay.classList.remove('active');
+    };
+
+    if (btnMobileMenu) {
+        btnMobileMenu.addEventListener('click', openSidebar);
+    }
+    sidebarOverlay.addEventListener('click', closeSidebar);
+
+    // Fechar ao clicar em um link
+    const navItems = document.querySelectorAll('.nav-item[data-target]');
+    const contentSections = document.querySelectorAll('.content-section');
 
     // Settings Modal
     const settingsModal = document.getElementById('settings-modal');
@@ -141,8 +161,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Navegação Sidebar Dinâmica
-    const navItems = document.querySelectorAll('.nav-item[data-target]');
-    const contentSections = document.querySelectorAll('.content-section');
 
     navItems.forEach(item => {
         item.addEventListener('click', () => {
@@ -180,6 +198,11 @@ document.addEventListener('DOMContentLoaded', () => {
                             document.getElementById('avatar-preview').innerHTML = `<img src="${userProfile.avatarDataURI}" />`;
                         }
                     }
+                }
+
+                // Fechar sidebar no mobile após clique
+                if (window.innerWidth <= 900) {
+                    closeSidebar();
                 }
             }
         });
