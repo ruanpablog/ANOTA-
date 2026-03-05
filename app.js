@@ -8,6 +8,40 @@ document.addEventListener('DOMContentLoaded', () => {
     const registerForm = document.getElementById('register-form');
     const loginForm = document.getElementById('login-form');
 
+    // =========================================
+    // SEGURANÇA: Rate Limiting + Session Timeout
+    // =========================================
+    const MAX_LOGIN_ATTEMPTS = 5;
+    const LOCKOUT_TIME_MS = 30 * 1000; // 30 segundos
+    const SESSION_TIMEOUT_MS = 30 * 60 * 1000; // 30 minutos
+    let loginAttempts = parseInt(sessionStorage.getItem('login_attempts') || '0');
+    let lockoutUntil = parseInt(sessionStorage.getItem('lockout_until') || '0');
+    let sessionTimer = null;
+    let isLoggedIn = false;
+
+    // Hash simples para não guardar senha em texto puro
+    const hashString = async (str) => {
+        const encoder = new TextEncoder();
+        const data = encoder.encode(str);
+        const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+        return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    };
+
+    const resetSessionTimer = () => {
+        if (!isLoggedIn) return;
+        clearTimeout(sessionTimer);
+        sessionTimer = setTimeout(() => {
+            alert('Sua sessão expirou por inatividade. Faça login novamente.');
+            isLoggedIn = false;
+            location.reload();
+        }, SESSION_TIMEOUT_MS);
+    };
+
+    ['click', 'keydown', 'scroll', 'touchstart'].forEach(evt => {
+        document.addEventListener(evt, resetSessionTimer, { passive: true });
+    });
+
     // --- Mobile Sidebar Overlay ---
     const sidebar = document.querySelector('.sidebar');
     const btnMobileMenu = document.getElementById('btn-mobile-menu');
@@ -117,11 +151,14 @@ document.addEventListener('DOMContentLoaded', () => {
         const email = document.getElementById('reg-email').value;
         const pass = document.getElementById('reg-password').value;
 
-        setTimeout(() => {
-            userProfile = { name, email, pass, avatarDataURI: null };
+        setTimeout(async () => {
+            const hashedPass = await hashString(pass);
+            userProfile = { name, email, pass: hashedPass, avatarDataURI: null };
             saveState();
 
             // Vai direto pro dashboard
+            isLoggedIn = true;
+            resetSessionTimer();
             registerView.classList.add('hidden');
             registerView.classList.remove('active');
             dashboardView.classList.remove('hidden');
@@ -132,21 +169,38 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 1000);
     });
 
-    // Login Submit Validação
-    loginForm.addEventListener('submit', (e) => {
+    // Login Submit Validação com Rate Limiting
+    loginForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const btnLog = document.getElementById('btn-login');
         const emailInput = document.getElementById('email').value;
         const passInput = document.getElementById('password').value;
         const errorMsg = document.getElementById('login-error-msg');
 
-        errorMsg.innerText = "";
+        // Verificar lockout
+        const now = Date.now();
+        if (lockoutUntil > now) {
+            const secsLeft = Math.ceil((lockoutUntil - now) / 1000);
+            errorMsg.innerText = `Muitas tentativas. Aguarde ${secsLeft}s para tentar novamente.`;
+            return;
+        }
+
+        errorMsg.innerText = '';
         btnLog.innerHTML = '<i class="ph ph-spinner ph-spin"></i><span> Autenticando...</span>';
+
+        const hashedInput = await hashString(passInput);
 
         setTimeout(() => {
             btnLog.innerHTML = '<span>Acessar Painel</span><i class="ph ph-sign-in"></i>';
-            // Validating com os dados criados antes
-            if (userProfile && emailInput === userProfile.email && passInput === userProfile.pass) {
+            if (userProfile && emailInput === userProfile.email && hashedInput === userProfile.pass) {
+                // Login OK
+                loginAttempts = 0;
+                sessionStorage.setItem('login_attempts', '0');
+                sessionStorage.removeItem('lockout_until');
+
+                isLoggedIn = true;
+                resetSessionTimer();
+
                 loginView.classList.add('hidden');
                 loginView.classList.remove('active');
                 dashboardView.classList.remove('hidden');
@@ -155,7 +209,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 refreshProfileUI();
                 updateDashboard();
             } else {
-                errorMsg.innerText = "Credenciais incorretas. Tente novamente.";
+                loginAttempts++;
+                sessionStorage.setItem('login_attempts', loginAttempts);
+
+                if (loginAttempts >= MAX_LOGIN_ATTEMPTS) {
+                    lockoutUntil = Date.now() + LOCKOUT_TIME_MS;
+                    sessionStorage.setItem('lockout_until', lockoutUntil);
+                    loginAttempts = 0;
+                    sessionStorage.setItem('login_attempts', '0');
+                    errorMsg.innerText = `Acesso bloqueado por 30 segundos. (${MAX_LOGIN_ATTEMPTS} tentativas inválidas)`;
+                } else {
+                    errorMsg.innerText = `Credenciais incorretas. Tentativa ${loginAttempts}/${MAX_LOGIN_ATTEMPTS}.`;
+                }
             }
         }, 800);
     });
